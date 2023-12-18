@@ -4,6 +4,99 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Social Media Usage Survey</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+        }
+
+        h1, h2 {
+            text-align: center;
+        }
+
+        form {
+            max-width: 400px;
+            margin: 0 auto;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 10px;
+        }
+
+        input, select, button {
+            width: 100%;
+            padding: 8px;
+            margin-bottom: 15px;
+            box-sizing: border-box;
+        }
+
+        button {
+            background-color: #4caf50;
+            color: white;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background-color: #45a049;
+        }
+
+        table {
+            max-width: 600px;
+            margin: 20px auto;
+            border-collapse: collapse;
+            width: 100%;
+        }
+
+        th, td {
+            border: 1px solid #ddd;
+            padding: 10px;
+            text-align: left;
+        }
+
+        th {
+            background-color: #4caf50;
+            color: white;
+        }
+    </style>
+</head>
+<body>
+    <h1>Social Media Usage Survey</h1>
+
+    <form id="surveyForm">
+        <label>
+            How many social media platforms do you use regularly?
+            <input type="number" name="platforms" min="0" required>
+        </label>
+
+        <label>
+            Which social media platform do you use the most?
+            <select name="favoritePlatform" required>
+                <option value="facebook">Facebook</option>
+                <option value="instagram">Instagram</option>
+                <option value="twitter">Twitter</option>
+                <option value="linkedin">LinkedIn</option>
+                <option value="other">Other</option>
+            </select>
+        </label>
+
+        <label>
+            How much time (in minutes) do you spend on social media per day?
+            <input type="number" name="timeSpent" min="0" required>
+        </label>
+
+        <button type="button" onclick="submitSurvey()">Submit</button>
+    </form>
+
+    <h2>Statistics</h2>
+    <table id="statisticsTable">
+        <tr>
+            <th>Stat</th>
+            <th>Value</th>
+        </tr>
+    </table>
+
+    <script>
 </head>
 <body>
     <h1>Social Media Usage Survey</h1>
@@ -20,7 +113,7 @@
                 <option value="facebook">Facebook</option>
                 <option value="instagram">Instagram</option>
                 <option value="twitter">Twitter</option>
-                <option value="linkedin">LinkedIn</option>
+                <option value="linkedin">LinkedIn</option>  
                 <option value="other">Other</option>
             </select>
         </label>
@@ -68,7 +161,79 @@
             updateStatisticsTable();
         }
 
-        // Rest of the code remains unchanged...
+        function updateStatisticsTable() {
+            const responses = JSON.parse(localStorage.getItem('socialMediaSurvey')) || [];
+
+            if (responses.length === 0) {
+                console.warn('No survey responses found.');
+                return;
+            }
+
+            const timeSpentArray = responses.map(response => parseInt(response.timeSpent));
+
+            const minTimeSpent = Math.min(...timeSpentArray);
+            const quartileTimeSpent = calculateQuartile(timeSpentArray);
+            const averageTimeSpent = calculateAverage(timeSpentArray);
+            const maxTimeSpent = Math.max(...timeSpentArray);
+            const modeTimeSpent = calculateMode(timeSpentArray);
+
+            const table = document.getElementById('statisticsTable');
+            table.innerHTML = `
+                <tr>
+                    <th>Stat</th>
+                    <th>Value</th>
+                </tr>
+                <tr>
+                    <td>Minimum Time Spent</td>
+                    <td>${minTimeSpent} minutes</td>
+                </tr>
+                <tr>
+                    <td>Quartile of Time Spent</td>
+                    <td>${quartileTimeSpent} minutes</td>
+                </tr>
+                <tr>
+                    <td>Average Time Spent</td>
+                    <td>${averageTimeSpent} minutes</td>
+                </tr>
+                <tr>
+                    <td>Maximum Time Spent</td>
+                    <td>${maxTimeSpent} minutes</td>
+                </tr>
+                <tr>
+                    <td>Most Common Time Spent</td>
+                    <td>${modeTimeSpent} minutes</td>
+                </tr>
+            `;
+        }
+
+        function calculateQuartile(data) {
+            const sortedData = [...data].sort((a, b) => a - b);
+            const middle = Math.floor(sortedData.length / 2);
+            return sortedData.length % 2 === 0
+                ? (sortedData[middle - 1] + sortedData[middle]) / 2
+                : sortedData[middle];
+        }
+
+        function calculateAverage(data) {
+            const sum = data.reduce((acc, value) => acc + value, 0);
+            return sum / data.length || 0;
+        }
+
+        function calculateMode(data) {
+            const counts = {};
+            let maxCount = 0;
+            let mode = null;
+
+            data.forEach(value => {
+                counts[value] = (counts[value] || 0) + 1;
+                if (counts[value] > maxCount) {
+                    maxCount = counts[value];
+                    mode = value;
+                }
+            });
+
+            return mode;
+        }
 
         // Initial update of statistics table on page load
         updateStatisticsTable();
