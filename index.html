@@ -1,44 +1,77 @@
+<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
+    <title>Social Media Usage Survey</title>
 </head>
 <body>
-    <h1>Simple Poll/Survey</h1>
+    <h1>Social Media Usage Survey</h1>
 
-    <form action="#" method="post">
-        <p>What is your favorite color?</p>
+    <form id="surveyForm">
+        <p>How many social media platforms do you use regularly?</p>
         <label>
-            <input type="radio" name="color" value="red"> Red
-        </label>
-        <label>
-            <input type="radio" name="color" value="blue"> Blue
-        </label>
-        <label>
-            <input type="radio" name="color" value="green"> Green
+            <input type="number" name="platforms" min="0" required>
         </label>
 
-        <p>Do you prefer cats or dogs?</p>
+        <p>Which social media platform do you use the most?</p>
         <label>
-            <input type="radio" name="pets" value="cats"> Cats
-        </label>
-        <label>
-            <input type="radio" name="pets" value="dogs"> Dogs
+            <select name="favoritePlatform" required>
+                <option value="facebook">Facebook</option>
+                <option value="instagram">Instagram</option>
+                <option value="twitter">Twitter</option>
+                <option value="linkedin">LinkedIn</option>
+                <option value="other">Other</option>
+            </select>
         </label>
 
-        <p>How satisfied are you with this poll?</p>
+        <p>How much time (in minutes) do you spend on social media per day?</p>
         <label>
-            <input type="radio" name="satisfaction" value="satisfied"> Satisfied
-        </label>
-        <label>
-            <input type="radio" name="satisfaction" value="neutral"> Neutral
-        </label>
-        <label>
-            <input type="radio" name="satisfaction" value="unsatisfied"> Unsatisfied
+            <input type="number" name="timeSpent" min="0" required>
         </label>
 
         <br><br>
-        <input type="submit" value="Submit">
+        <button type="button" onclick="submitSurvey()">Submit</button>
+    </form>
+
+    <h2>Statistics</h2>
+    <table id="statisticsTable" border="1">
+        <tr>
+            <th>Stat</th>
+            <th>Value</th>
+        </tr>
+    </table>
+
+    <script>
+        function submitSurvey() {
+            const form = document.getElementById('surveyForm');
+            const formData = new FormData(form);
+
+            // Convert formData to a plain object
+            const data = {};
+            formData.forEach((value, key) => {
+                data[key] = value;
+            });
+
+            // Store the responses in localStorage
+            const responses = JSON.parse(localStorage.getItem('socialMediaSurvey')) || [];
+            responses.push(data);
+            localStorage.setItem('socialMediaSurvey', JSON.stringify(responses));
+
+            // Show a pop-up confirmation message
+            window.alert('Thanks for submitting the survey!');
+
+            // Clear the form
+            form.reset();
+
+            // Update statistics table
+            updateStatisticsTable();
+        }
+
+        // Rest of the code remains unchanged...
+
+        // Initial update of statistics table on page load
+        updateStatisticsTable();
+    </script>
 </body>
 </html>
